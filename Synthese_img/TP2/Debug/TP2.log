@@ -1,29 +1,29 @@
 ﻿  TP2.cpp
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:  'argument' : conversion de 'T' en 'const T', perte possible de données
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:         with
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:         [
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:             T=float
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:         ]
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:         and
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:         [
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:             T=int
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,69): warning C4244:         ]
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:  'argument' : conversion de 'T' en 'const T', perte possible de données
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:         with
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:         [
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:             T=float
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:         ]
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:         and
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:         [
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:             T=int
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,61): warning C4244:         ]
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:  'argument' : conversion de 'T' en 'const T', perte possible de données
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:         with
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:         [
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:             T=float
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:         ]
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:         and
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:         [
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:             T=int
-C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(36,53): warning C4244:         ]
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:  'argument' : conversion de 'T' en 'const T', perte possible de données
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:         with
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:         [
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:             T=float
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:         ]
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:         and
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:         [
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:             T=int
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,69): warning C4244:         ]
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:  'argument' : conversion de 'T' en 'const T', perte possible de données
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:         with
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:         [
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:             T=float
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:         ]
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:         and
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:         [
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:             T=int
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,61): warning C4244:         ]
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:  'argument' : conversion de 'T' en 'const T', perte possible de données
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:         with
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:         [
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:             T=float
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:         ]
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:         and
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:         [
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:             T=int
+C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(39,53): warning C4244:         ]
   TP2.vcxproj -> C:\Users\elouchez\Documents\GitRepo\Synthese image\Synthese_img\Debug\TP2.exe

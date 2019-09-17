@@ -8,9 +8,9 @@ int main() {
 	spheres.push_back(sphere{Vector3<float>(200,200,300),100});
 	spheres.push_back(sphere{ Vector3<float>(400,400,300),50 });
 	rayon r = { Vector3<float>(0,0,0),Vector3<float>(0,0,1) };
-	light L = { Vector3<float>(300,600,300),Vector3<float>(100000, 100000, 100000) };
+	light L = { Vector3<float>(300,600,300),Vector3<float>(255, 255, 255) };
 
-	PPM ppm(WIDTH, HEIGHT, 1);
+	PPM ppm(WIDTH, HEIGHT, 255);
 	for (int row = 0; row < HEIGHT; row++) {
 		for (int col = 0; col < WIDTH; col++) {
 			r.origine.x = (float) col;
@@ -18,9 +18,9 @@ int main() {
 			for (std::vector<sphere>::iterator it = spheres.begin(); it != spheres.end(); it++) {
 				std::optional<float> t = intersectionRayonSphere(*it, r);
 				if (t.has_value()) {
-					ppm.pixelMatrix[row][col] = Vector3<int>(255, 255, 255);
+					//ppm.pixelMatrix[row][col] = Vector3<int>(255, 255, 255);
 					Vector3<float> pointIntersection = r.origine + r.direction * t.value();
-					rayon r2 = { pointIntersection, L.position - pointIntersection };
+					rayon r2 = { pointIntersection, (L.position - pointIntersection).normalized() };
 					for (std::vector<sphere>::iterator it2 = spheres.begin(); it2 != spheres.end(); it2++) {
 						std::optional<float> t2 = intersectionRayonSphere(*it2, r2);
 						if (t2.has_value() && (pointIntersection + (L.position - pointIntersection).normalized() * t2.value()).norm() < (L.position - pointIntersection).norm()) {
@@ -29,16 +29,20 @@ int main() {
 							break;
 						}
 						else {
-							//Vector3<float> normale = (pointIntersection - it->centre).normalized();
-							//float angle = ((L.position - pointIntersection).dot(normale)) / ((L.position - pointIntersection).norm() * normale.norm());
-							float dist = (L.position - pointIntersection).norm();
-							Vector3<float> Lres = L.intensite * Vector3<float>(1 / (dist * dist), 1 / (dist * dist), 1 / (dist * dist)) * 255;
+							Vector3<float> lightDirection = (L.position - pointIntersection);
+							Vector3<float> normale = (pointIntersection - it->centre);
+
+							float angle = (lightDirection.dot(normale)) / (lightDirection.norm() * normale.norm());
+							float dist = lightDirection.norm();
+
+							Vector3<float> Lres = Vector3<float>(angle, angle, angle) * L.intensite;
 							ppm.pixelMatrix[row][col] = Vector3<int>(Lres.x, Lres.y, Lres.z);
+							//ppm.pixelMatrix[row][col] = Vector3<int>(255, 255, 255); 
 						}
 					}		
 				}
 				else {
-					//ppm.pixelMatrix[row][col] = ppm.pixelMatrix[row][col] + Vector3<int>(0, 0, 0);
+					ppm.pixelMatrix[row][col] = ppm.pixelMatrix[row][col] + Vector3<int>(0, 0, 0);
 				}
 			}		
 		}
