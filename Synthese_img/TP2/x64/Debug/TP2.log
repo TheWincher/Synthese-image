@@ -1,0 +1,27 @@
+﻿  TP2.cpp
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,31): warning C4244:  'argument' : conversion de 'int' en 'const T', perte possible de données
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,31): warning C4244:         with
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,31): warning C4244:         [
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,31): warning C4244:             T=float
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,31): warning C4244:         ]
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,29): warning C4244:  'argument' : conversion de 'int' en 'const T', perte possible de données
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,29): warning C4244:         with
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,29): warning C4244:         [
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,29): warning C4244:             T=float
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(23,29): warning C4244:         ]
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,81): warning C4244:  'argument' : conversion de 'float' en 'const T', perte possible de données
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,81): warning C4244:         with
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,81): warning C4244:         [
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,81): warning C4244:             T=int
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,81): warning C4244:         ]
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,61): warning C4244:  'argument' : conversion de 'float' en 'const T', perte possible de données
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,61): warning C4244:         with
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,61): warning C4244:         [
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,61): warning C4244:             T=int
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,61): warning C4244:         ]
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,41): warning C4244:  'argument' : conversion de 'float' en 'const T', perte possible de données
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,41): warning C4244:         with
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,41): warning C4244:         [
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,41): warning C4244:             T=int
+C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\TP2\TP2.cpp(52,41): warning C4244:         ]
+  TP2.vcxproj -> C:\Users\Emmanuel\Desktop\Master Gamagora\Synthese-image\Synthese_img\x64\Debug\TP2.exe

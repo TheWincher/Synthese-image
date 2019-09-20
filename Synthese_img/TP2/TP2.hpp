@@ -5,32 +5,40 @@
 #include <iostream>
 #include <cmath>
 #include <optional>
+#include <vector>
+#include <fstream>
 
 #define WIDTH 600
 #define HEIGHT 600
 
-struct sphere {
-	Vector3<float> centre;
-	float rayon;
+struct Sphere {
+	Vector3<float> center;
+	float radius;
+
+	Sphere(Vector3<float> c, float r) { center = c, radius = r; }
+	Vector3<float> getNormal(const Vector3<float>& p) { return (p - center ) / radius; }
 };
 
-struct rayon {
-	Vector3<float> origine;
+struct Ray {
+	Vector3<float> origin;
 	Vector3<float> direction;
+
+	Ray(Vector3<float> o, Vector3<float> d) { origin = o, direction = d; }
 };
 
-struct light
+struct Light
 {
-	Vector3<float> position;
-	Vector3<float> intensite;
+	Vector3<float> pos;
+	Vector3<int> color;
+	float intensity;
 };
 
-std::optional<float> intersectionRayonSphere(const sphere& s, const rayon& r) {
+std::optional<float> intersectionRayonSphere(const Sphere& s, const Ray& r) {
 
 	Vector3<float> rDirectionNorm = r.direction.normalized();
 	float a = 1;
-	float b = 2 * (r.origine.dot(rDirectionNorm) - s.centre.dot(rDirectionNorm));
-	float c = r.origine.dot(r.origine) + s.centre.dot(s.centre) - 2 * s.centre.dot(r.origine) - s.rayon * s.rayon;
+	float b = 2 * (r.origin.dot(rDirectionNorm) - s.center.dot(rDirectionNorm));
+	float c = r.origin.dot(r.origin) + s.center.dot(s.center) - 2 * s.center.dot(r.origin) - s.radius * s.radius;
 
 	float delta = b * b - 4 * a * c;
 	float res = -1;

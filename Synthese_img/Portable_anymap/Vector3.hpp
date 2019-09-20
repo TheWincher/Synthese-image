@@ -71,9 +71,9 @@ struct Vector3 {
 		return Vector3<T>{x / rhs.x, y / rhs.y, z / rhs.z};
 	}
 
-    friend Vector3<T> operator*(const T &scalar, const Vector3<T> &rhs) {
+    /*friend Vector3<T> operator*(const T &scalar, const Vector3<T> &rhs) {
         return Vector3{scalar * rhs.x, scalar * rhs.y, scalar * rhs.z};
-    }
+    }*/
 
     friend std::ostream &operator<<(std::ostream &os, const Vector3<T> &vector3) {
         return os << "[" << vector3.x << ", " << vector3.y << ", " << vector3.z << "]";
