@@ -1,0 +1,22 @@
+﻿  TP2.cpp
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(4,9): warning C4068:  pragma inconnu
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(9,12): warning C4244:  'argument' : conversion de 'time_t' en 'unsigned int', perte possible de données
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,31): warning C4244:  'argument' : conversion de 'int' en 'const T', perte possible de données
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,31): warning C4244:         with
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,31): warning C4244:         [
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,31): warning C4244:             T=float
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,31): warning C4244:         ]
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,29): warning C4244:  'argument' : conversion de 'int' en 'const T', perte possible de données
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,29): warning C4244:         with
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,29): warning C4244:         [
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,29): warning C4244:             T=float
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(28,29): warning C4244:         ]
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(45,19): warning C4244:  'initialisation' : conversion de 'int' en 'float', perte possible de données
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(46,19): warning C4244:  'initialisation' : conversion de 'int' en 'float', perte possible de données
+D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.cpp(47,19): warning C4244:  'initialisation' : conversion de 'int' en 'float', perte possible de données
+  Génération de code en cours
+  1 of 299 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Fin de la génération du code
+  TP2.vcxproj -> D:\GitRepo\Synthese image\Synthese_img\x64\Release\TP2.exe
