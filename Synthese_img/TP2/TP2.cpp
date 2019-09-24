@@ -42,9 +42,9 @@ int main() {
 
 				for (int l = 0; l < lights.size(); l++) {
 					for (int i = 0; i < NB_POINT_LIGHT; i++) {
-						float xRand = rand() % ((int)lights[l].offset.x) + 1;
-						float yRand = rand() % ((int)lights[l].offset.y) + 1;
-						float zRand = rand() % ((int)lights[l].offset.z) + 1;
+						float xRand = (rand() / RAND_MAX) * lights[l].offset.x;
+						float yRand = (rand() / RAND_MAX) * lights[l].offset.y;
+						float zRand = (rand() / RAND_MAX) * lights[l].offset.z;
 
 						Vector3<float> vRand(xRand,yRand, zRand);
 						Vector3<float> L = (lights[l].pos + vRand) - pointIntersection;
