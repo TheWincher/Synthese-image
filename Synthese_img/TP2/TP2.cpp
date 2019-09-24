@@ -10,7 +10,7 @@ int main() {
 
 	//On ajoute des spheres dans le tableau
 	spheres.push_back(Sphere(Vector3<float>(300,300,300),50));
-	spheres.push_back(Sphere(Vector3<float>(600,600,600),250 ));
+	spheres.push_back(Sphere(Vector3<float>(600,600,600),250));
 
 	//Création du rayon et de la lumière
 	std::vector<Light> lights;
