@@ -1,9 +1,7 @@
 ﻿  TP2.cpp
-D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.hpp(189,17): warning C4244:  'initialisation' : conversion de 'double' en 'float', perte possible de données
-D:\GitRepo\Synthese image\Synthese_img\TP2\TP2.hpp(190,15): warning C4244:  'initialisation' : conversion de 'double' en 'float', perte possible de données
   Génération de code en cours
-  1 of 364 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  0 of 370 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    7 functions had inline decision re-evaluated but remain unchanged
   Fin de la génération du code
-  TP2.vcxproj -> D:\GitRepo\Synthese image\Synthese_img\x64\Release\TP2.exe
+  TP2.vcxproj -> D:\GitRepo\Synthese-image\Synthese_img\x64\Release\TP2.exe

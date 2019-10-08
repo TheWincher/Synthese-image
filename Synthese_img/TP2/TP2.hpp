@@ -5,17 +5,19 @@
 #include <cmath>
 #include "..\Portable_anymap\PPM.h"
 #include <iostream>
+#include <algorithm>
+#include <functional>
+#include <array>
 
 #include <optional>
 #include <vector>
 #include <fstream>
-#include <stdlib.h>
 
 #define WIDTH 600
 #define HEIGHT 600
 #define NB_POINT_LIGHT 100
-#define MAX_REBOND 5
-#define NB_POINT_REFLECTED 16
+#define MAX_REBOND 3
+#define NB_POINT_REFLECTED 5
 
 struct Sphere {
 	Vector3<float> center;
@@ -28,11 +30,19 @@ struct Sphere {
 };
 
 struct Box {
-	Vector3<float> p1;
-	Vector3<float> p2;
-	Box *boxInside;
+	Vector3<float> lb;
+	Vector3<float> rt;
 
-	Box(Vector3<float> p1, Vector3<float> p2) { this->p1 = p1, this->p2 = p2, boxInside = nullptr; }
+	Box(Vector3<float> p1, Vector3<float> p2) { this->lb = p1, this->rt = p2; }
+};
+
+template<typename T>
+struct TreeBox {
+	T* currentNode;
+	TreeBox* right;
+	TreeBox* left;
+
+	TreeBox(T* current, TreeBox* r, TreeBox* l) { currentNode = current, right = r, left = l; }
 };
 
 struct Ray {
@@ -57,6 +67,109 @@ struct Light
 	}
 };
 
+TreeBox<Box> getFirstTreeBox(std::vector<Sphere> spheres) {
+	float yMin = spheres[0].center.y - spheres[0].radius;
+	float yMax = spheres[0].center.y + spheres[0].radius; 
+	float xMin = spheres[0].center.x - spheres[0].radius;
+	float xMax = spheres[0].center.x + spheres[0].radius;
+	float zMin = spheres[0].center.z - spheres[0].radius;
+	float zMax = spheres[0].center.z + spheres[0].radius;
+
+	for (std::vector<Sphere>::iterator it = spheres.begin(); it != spheres.end(); it++) {
+		if (it->center.y - it->radius < yMin)
+			yMin = it->center.y - it->radius;
+		if (it->center.y + it->radius > yMax)
+			yMax = it->center.y + it->radius;
+		if (it->center.x - it->radius < xMin)
+			xMin = it->center.y - it->radius;
+		if (it->center.x + it->radius > xMax)
+			xMax = it->center.x + it->radius;
+		if (it->center.z - it->radius < zMin)
+			zMin = it->center.z - it->radius;
+		if (it->center.z + it->radius > zMax)
+			zMax = it->center.z + it->radius;
+	}
+
+	return TreeBox<Box>(new Box(Vector3<float>(xMin, yMin, zMin), Vector3<float>(xMax, yMax, zMax)), nullptr, nullptr);
+}
+
+std::vector<Sphere> getSphereInBox(const Box& b, std::vector<Sphere> spheres) {
+	std::vector<Sphere> sphereInBox;
+	for (std::vector<Sphere>::iterator it = spheres.begin(); it != spheres.end(); it++) {
+		if (it->center.x < b.rt.x && it->center.y < b.rt.y && it->center.z < b.rt.z)
+			if (it->center.x > b.lb.x&& it->center.y > b.lb.y&& it->center.z > b.lb.z)
+				sphereInBox.push_back(*it);
+	}
+}
+
+void getMagnitudeAxis(std::vector<Sphere> spheres, float* x, float* y, float* z) {
+	float yMin = spheres[0].center.y - spheres[0].radius;
+	float yMax = spheres[0].center.y + spheres[0].radius;
+	float xMin = spheres[0].center.x - spheres[0].radius;
+	float xMax = spheres[0].center.x + spheres[0].radius;
+	float zMin = spheres[0].center.z - spheres[0].radius;
+	float zMax = spheres[0].center.z + spheres[0].radius;
+
+	for (std::vector<Sphere>::iterator it = spheres.begin(); it != spheres.end(); it++) {
+		if (it->center.y - it->radius < yMin)
+			yMin = it->center.y - it->radius;
+		if (it->center.y + it->radius > yMax)
+			yMax = it->center.y + it->radius;
+		if (it->center.x - it->radius < xMin)
+			xMin = it->center.y - it->radius;
+		if (it->center.x + it->radius > xMax)
+			xMax = it->center.x + it->radius;
+		if (it->center.z - it->radius < zMin)
+			zMin = it->center.z - it->radius;
+		if (it->center.z + it->radius > zMax)
+			zMax = it->center.z + it->radius;
+	}
+
+	*x = xMax - xMin;
+	*y = yMax - yMin;
+	*z = zMax - zMin;
+}
+
+struct sortSphereX
+{
+	inline bool operator() (const Sphere& struct1, const Sphere& struct2)
+	{
+		return (struct1.center.x < struct2.center.x);
+	}
+};
+
+struct sortSphereY
+{
+	inline bool operator() (const Sphere& struct1, const Sphere& struct2)
+	{
+		return (struct1.center.y < struct2.center.y);
+	}
+};
+
+struct sortSphereZ
+{
+	inline bool operator() (const Sphere& struct1, const Sphere& struct2)
+	{
+		return (struct1.center.z < struct2.center.z);
+	}
+};
+
+void splitBox(TreeBox<Box> treeBox, const std::vector<Sphere> &spheres) {
+	std::vector<Sphere> sphereInBox = getSphereInBox(*treeBox.currentNode,spheres);
+
+	if (sphereInBox.size() > 1) {
+		float xMagnitude, yMagnitude, zMagnitude;
+		getMagnitudeAxis(sphereInBox, &xMagnitude, &yMagnitude, &zMagnitude);
+		if (xMagnitude >= yMagnitude && xMagnitude >= zMagnitude)
+			std::sort(sphereInBox.begin(), sphereInBox.end(), sortSphereX());
+		else if (yMagnitude >= xMagnitude && yMagnitude >= zMagnitude)
+			std::sort(sphereInBox.begin(), sphereInBox.end(), sortSphereY());
+		else
+			std::sort(sphereInBox.begin(), sphereInBox.end(), sortSphereZ());
+	}
+	
+}
+
 float clamp(float min, float max, float value)
 {
 	if (value < min) return min;
@@ -70,27 +183,7 @@ float clampMin(float min, float value)
 	return value;
 }
 
-int sortSphere(const void* left, const void* right) {
-	if (((Sphere*)left)->center.x > ((Sphere*)right)->center.x)
-		return -1;
-	else if (((Sphere*)left)->center.x < ((Sphere*)right)->center.x)
-		return 1;
-	else {
-		if (((Sphere*)left)->center.y > ((Sphere*)right)->center.y)
-			return -1;
-		else if (((Sphere*)left)->center.y < ((Sphere*)right)->center.y)
-			return 1;
-		else {
-			if (((Sphere*)left)->center.z > ((Sphere*)right)->center.z)
-				return -1;
-			else if (((Sphere*)left)->center.z < ((Sphere*)right)->center.z)
-				return 1;
-		}
-	}
-	return -1;
-}
-
-std::optional<float> intersectionRayonSphere(const Sphere& s, const Ray& r) {
+std::optional<float> intersect(const Sphere& s, const Ray& r) {
 
 	Vector3<float> rDirectionNorm = r.direction.normalized();
 	float a = 1;
@@ -110,17 +203,45 @@ std::optional<float> intersectionRayonSphere(const Sphere& s, const Ray& r) {
 	return res;
 }
 
+std::optional<float> intersect(const Box& b, const Ray& r) {
+	// r.dir is unit direction vector of ray
+	Vector3<float> dirfrac;
+	dirfrac.x = 1.0f / r.direction.x;
+	dirfrac.y = 1.0f / r.direction.y;
+	dirfrac.z = 1.0f / r.direction.z;
+	// lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+	// r.org is origin of ray
+	float t1 = (b.lb.x - r.origin.x) * dirfrac.x;
+	float t2 = (b.rt.x - r.origin.x) * dirfrac.x;
+	float t3 = (b.lb.y - r.origin.y) * dirfrac.y;
+	float t4 = (b.rt.y - r.origin.y) * dirfrac.y;
+	float t5 = (b.lb.z - r.origin.z) * dirfrac.z;
+	float t6 = (b.rt.z - r.origin.z) * dirfrac.z;
+
+	float tmin = std::fmax(std::fmax(std::fmin(t1, t2), std::fmin(t3, t4)), std::fmin(t5, t6));
+	float tmax = std::fmin(std::fmin(std::fmax(t1, t2), std::fmax(t3, t4)), std::fmax(t5, t6));
+
+	// if tmax < 0, ray (line) is intersecting AABB, but the whole AABB is behind us
+	// if tmin > tmax, ray doesn't intersect AABB
+	if (tmax < 0 || tmin > tmax)
+	{
+		return std::nullopt;
+	}
+
+	return tmin;
+}
+
 std::optional<std::tuple<float,const Sphere*>> getNearestIntersect(std::vector<Sphere> spheres, const Ray& r) {
 	std::optional<std::tuple<float, const Sphere*>> res = std::nullopt;
 
 	for (std::vector<Sphere>::iterator it2 = spheres.begin(); it2 != spheres.end(); it2++) {
 		if (res.has_value()) {
-			std::optional<float> tt = intersectionRayonSphere(*it2, r);
+			std::optional<float> tt = intersect(*it2, r);
 			if (tt.has_value() && tt.value() < std::get<0>(res.value()))
 				res = std::make_tuple(tt.value(), &*it2);
 		}
 		else {
-			std::optional<float> tt = intersectionRayonSphere(*it2, r);
+			std::optional<float> tt = intersect(*it2, r);
 			if (tt.has_value()) {
 				res = std::make_tuple(tt.value(), &*it2);
 			}
@@ -184,7 +305,7 @@ Vector3<float> traceRay(Ray r, const std::vector<Sphere> &spheres, const  std::v
 			}
 
 			//Indirect Light
-			Vector3<float> indirectLight = Vector3<float>(0.0f, 0.0f, 0.0f);
+			/*Vector3<float> indirectLight = Vector3<float>(0.0f, 0.0f, 0.0f);
 			for (int i = 0; i < NB_POINT_REFLECTED; i++) {
 				float theta = (((float)rand()) / RAND_MAX) * M_PI;
 				float phi = (((float)rand()) / RAND_MAX) * M_PI;
@@ -196,7 +317,7 @@ Vector3<float> traceRay(Ray r, const std::vector<Sphere> &spheres, const  std::v
 				// step 4 and 5: treat the return color as if it was a light (we assume our shaded surface is diffuse)
 				indirectLight = indirectLight + sampleColor * cos(theta); // diffuse shading = L_i * cos(N.L) 
 			}
-			color = color + (indirectLight / NB_POINT_REFLECTED) * ((Sphere*)std::get<1>(t.value()))->albedo;
+			color = color + (indirectLight / NB_POINT_REFLECTED) * ((Sphere*)std::get<1>(t.value()))->albedo;*/
 		}
 	}
 	return color;
