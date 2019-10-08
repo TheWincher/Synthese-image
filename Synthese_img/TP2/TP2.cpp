@@ -10,10 +10,10 @@ int main() {
 
 	//On ajoute des spheres dans le tableau
 	//spheres.push_back(Sphere(Vector3<float>(300,300,300),50));
-	spheres.push_back(Sphere(Vector3<float>(400,400,100), 50, Vector3<float>(1.0F,1.0F,1.0F), true));
+	spheres.push_back(Sphere(Vector3<float>(400,400,100), 50, Vector3<float>(1.0F,1.0F,1.0F), 1.0f));
 
 	float R = 15000.0;
-	spheres.push_back(Sphere(Vector3<float>(300.f, 300.f, R + 500.f), R, Vector3<float>(1.f, 0.f, 0.f)));//fond
+	spheres.push_back(Sphere(Vector3<float>(300.f, 300.f, R + 500.f), R, Vector3<float>(1.f, 0.f, 0.f), 0.5f));//fond
 	spheres.push_back(Sphere(Vector3<float>{300.f, 300.f, -R + 00.f}, R, Vector3<float>(1.f, 0.f, 0.f)));//devant
 	spheres.push_back(Sphere(Vector3<float>{300.f, R + 600.f, 0.f}, R,  Vector3<float>(0.f, 1.f, 0.f)));//droite
 	spheres.push_back(Sphere(Vector3<float>{300.f, -R, 0.f}, R,  Vector3<float>(1.f, 0.f, 1.f)));//gauche
@@ -29,13 +29,14 @@ int main() {
 	PPM ppm(WIDTH, HEIGHT, 255);
 
 	//Pour chaque pixel
+#pragma omp parallel for
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 
 			Vector3<float> direction = Vector3<float>((float) x, (float) y, 0) - pointCamera;
 			//On envoit un rayon
 			Ray r(Vector3<float>((float) x, (float) y,0),direction.normalized());
-			Vector3<float> color = traceRay(r, spheres, lights);
+			Vector3<float> color = traceRay(r, spheres, lights, 0);
 			ppm.pixelMatrix[y][x] = Vector3<int>((int)clamp(0, 255, color.x), (int)clamp(0, 255, color.y), (int)clamp(0, 255, color.z));
 		}
 	}
