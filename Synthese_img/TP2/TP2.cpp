@@ -18,7 +18,7 @@ int main() {
 	spheres.push_back(Sphere(Vector3<float>{300.f, R + 600.f, 0.f}, R,  Vector3<float>(0.f, 1.f, 0.f)));//droite
 	spheres.push_back(Sphere(Vector3<float>{300.f, -R, 0.f}, R,  Vector3<float>(1.f, 0.f, 1.f)));//gauche
 	spheres.push_back(Sphere(Vector3<float>{R + 600.f, 300.f, 0.f}, R, Vector3<float>(0.f, 1.f, 1.f)));//bas
-	spheres.push_back(Sphere(Vector3<float>{-R, 300.f, 0.f}, R,Vector3<float>(1.f, 1.f, 0.f)));//haut    
+	spheres.push_back(Sphere(Vector3<float>{-R, 300.f, 0.f}, R,Vector3<float>(1.f, 1.f, 0.f)));//haut  
 
 	//Création du rayon et de la lumière
 	std::vector<Light> lights;
@@ -28,6 +28,8 @@ int main() {
 	//Création d'une image 
 	PPM ppm(WIDTH, HEIGHT, 255);
 
+	std::variant<Node*, Sphere> root = splitBox(spheres);
+
 	//Pour chaque pixel
 #pragma omp parallel for
 	for (int y = 0; y < HEIGHT; y++) {
@@ -36,7 +38,7 @@ int main() {
 			Vector3<float> direction = Vector3<float>((float) x, (float) y, 0) - pointCamera;
 			//On envoit un rayon
 			Ray r(Vector3<float>((float) x, (float) y,0),direction.normalized());
-			Vector3<float> color = traceRay(r, spheres, lights, 0);
+			Vector3<float> color = traceRay(r, root, lights, 0);
 			ppm.pixelMatrix[y][x] = Vector3<int>((int)clamp(0, 255, color.x), (int)clamp(0, 255, color.y), (int)clamp(0, 255, color.z));
 		}
 	}
