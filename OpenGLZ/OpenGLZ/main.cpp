@@ -1,6 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+#include "stl.h"
 
 #include <vector>
 #include <iostream>
@@ -124,8 +128,10 @@ void APIENTRY opengl_error_callback(GLenum source,
 		const GLchar *message,
 		const void *userParam)
 {
+
 	std::cout << message << std::endl;
 }
+
 
 int main(void)
 {
@@ -159,6 +165,7 @@ int main(void)
 
 	// Callbacks
 	glDebugMessageCallback(opengl_error_callback, nullptr);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
 	const size_t nParticules = 1000;
 	const auto particules = MakeParticules(nParticules);
@@ -177,40 +184,61 @@ int main(void)
 	glGenBuffers(1, &vbo);
 	glGenVertexArrays(1, &vao);
 
+	std::vector<Triangle> logo = ReadStl("logo.stl");
+	glm::mat4 mat, modelView;
+
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, nParticules * sizeof(Particule), particules.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, logo.size() * sizeof(glm::vec3) * 3, logo.data(), GL_STATIC_DRAW);
 
 	// Bindings
 	const auto index = glGetAttribLocation(program, "position");
-	const auto indexColor = glGetAttribLocation(program, "color");
+	//const auto indexColor = glGetAttribLocation(program, "color");
 	const auto indexScale = glGetUniformLocation(program, "scale");
 
-	glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, sizeof(Particule), nullptr);
-	glVertexAttribPointer(indexColor, 3, GL_FLOAT, GL_FALSE, sizeof(Particule), (void *) (sizeof(float) * 3));
+	glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) , nullptr);
+	//glVertexAttribPointer(indexColor, 3, GL_FLOAT, GL_FALSE, sizeof(Particule) , (void *) (sizeof(float) * 3));
 	
 	glEnableVertexAttribArray(index);
-	glEnableVertexAttribArray(indexColor);
+	//glEnableVertexAttribArray(indexColor);
 
 	glPointSize(20.f);
-	float val = 0.5f;
+	float val = 0.01f;
+	int modScale = 0;
+	double xPos, yPos;
+	modelView = glm::mat4(val, 0.0f, 0.0f, 0.0f, 0.0f, val, 0.0f, 0.0f, 0.0f, 0.0f, val, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	glProgramUniformMatrix4fv(program, indexScale, 1, GL_FALSE, &mat[0][0]);
+	glm::vec3 oldMousePos;
 
 	while (!glfwWindowShouldClose(window))
 	{
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
+		glfwGetCursorPos(window, &xPos, &yPos);
 
 		glViewport(0, 0, width, height);
 		
-		glProgramUniform1f(program, indexScale, val);
-		val += 0.1f;
-		if (val > 10.0f)
-			val = 0.5f;
+		//glProgramUniform1f(program, indexScale, val);
+		//modelView = glm::scale(glm::vec3(val, val, val));
+		//modelView = glm::rotate(modelView, 0.01f, glm::vec3(0.0f, 0.0f, 1.0f));
+		glProgramUniformMatrix4fv(program, indexScale, 1, GL_FALSE, &modelView[0][0]);
+		
+		
+		if (modScale == 0)
+			val += 0.0001f;
+		else
+			val -= 0.0001f;
+
+		if (val >= 0.02f)
+			modScale = 1;
+		if (val <= 0.01f)
+			modScale = 0;
+		
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		// glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
-		glDrawArrays(GL_POINTS, 0, nParticules);
+		glDrawArrays(GL_TRIANGLES, 0, logo.size() * 3);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

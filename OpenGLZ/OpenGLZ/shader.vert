@@ -5,11 +5,11 @@ in vec3 color;
 
 out vec3 color_out;
 
-uniform float scale;
+uniform mat4 scale;
 
 void main()
 {
-    gl_Position = vec4(position * scale, 1.0);
+    gl_Position = scale * vec4(position , 1.0);
 
 	color_out = color;
 }
