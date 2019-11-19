@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include "stl.h"
+#include "obj.h"
+#include "texture.h"
 
 #include <vector>
 #include <iostream>
@@ -163,6 +165,7 @@ int main(void)
 		exit(-1);
 	}
 
+	glEnable(GL_DEPTH_TEST);
 	// Callbacks
 	glDebugMessageCallback(opengl_error_callback, nullptr);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -178,67 +181,120 @@ int main(void)
 
 	glUseProgram(program);
 
+	std::vector< glm::vec3 > vertices;
+	std::vector< glm::vec2 > uvs;
+	std::vector< glm::vec3 > normals;
+	bool res = loadOBJ("Baumstamm.obj", vertices, uvs, normals);
+
 
 	// Buffers
 	GLuint vbo, vao;
 	glGenBuffers(1, &vbo);
 	glGenVertexArrays(1, &vao);
+	int bufferOffset = 0;
 
-	std::vector<Triangle> logo = ReadStl("logo.stl");
+	//std::vector<Triangle> logo = ReadStl("logo.stl");
 	glm::mat4 mat, modelView;
 
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, logo.size() * sizeof(glm::vec3) * 3, logo.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3) + uvs.size() * sizeof(glm::vec2), vertices.data(), GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(glm::vec3), vertices.data());
+	glBufferSubData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), uvs.size() * sizeof(glm::vec2), uvs.data());
+	//glBufferData(GL_ARRAY_BUFFER, logo.size() * sizeof(glm::vec3) * 3, logo.data(), GL_STATIC_DRAW);
 
 	// Bindings
 	const auto index = glGetAttribLocation(program, "position");
-	//const auto indexColor = glGetAttribLocation(program, "color");
+	glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr);
+	glEnableVertexAttribArray(index);
+	bufferOffset += sizeof(glm::vec3) * vertices.size();
+
 	const auto indexScale = glGetUniformLocation(program, "scale");
 
-	glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3) , nullptr);
+	const auto indexUV = glGetAttribLocation(program, "uv");
+	glVertexAttribPointer(indexUV, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*) (sizeof(glm::vec3) * vertices.size()));
+	glEnableVertexAttribArray(indexUV);
+
+	//const auto indexColor = glGetAttribLocation(program, "color");
 	//glVertexAttribPointer(indexColor, 3, GL_FLOAT, GL_FALSE, sizeof(Particule) , (void *) (sizeof(float) * 3));
-	
-	glEnableVertexAttribArray(index);
 	//glEnableVertexAttribArray(indexColor);
 
+	//Textures
+	Image imgTexture = LoadImage("Baumstamm.bmp");
+	GLuint textureID = 0;
+	glCreateTextures(GL_TEXTURE_2D, 1, &textureID);
+	glTextureStorage2D(textureID, 1, GL_RGB8, imgTexture.width, imgTexture.height);
+	glTextureSubImage2D(textureID, 0, 0, 0, imgTexture.width, imgTexture.height, GL_RGB, GL_UNSIGNED_BYTE, imgTexture.data.data());
+
+	const auto texture = glGetUniformLocation(program, "texScreen");
+	glBindTextureUnit(0, textureID);
+	glProgramUniform1i(program, texture, 0);
+
+	GLuint textureFrameBuffer = 1;
+	glCreateTextures(GL_TEXTURE_2D, 1, &textureFrameBuffer);
+	glTextureStorage2D(textureFrameBuffer, 1, GL_RGB8, imgTexture.width, imgTexture.height);
+
+	GLuint textureDepthFrameBuffer = 2;
+	glCreateTextures(GL_TEXTURE_2D, 1, &textureDepthFrameBuffer);
+	glTextureStorage2D(textureDepthFrameBuffer, 1, GL_DEPTH_COMPONENT24, imgTexture.width, imgTexture.height);
+
+	//FrameBuffer
+	GLuint frameID = 1;
+	glCreateFramebuffers(1, &frameID);
+	glNamedFramebufferTexture(frameID, GL_COLOR_ATTACHMENT0, textureFrameBuffer, 0);
+	glNamedFramebufferTexture(frameID, GL_DEPTH_ATTACHMENT, textureDepthFrameBuffer, 0);
+	GLenum frameStatut = glCheckNamedFramebufferStatus(frameID, GL_FRAMEBUFFER);
+	if (frameStatut == GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "complet" << std::endl;
+	else 
+		std::cout << "incomplet" << std::endl;
+
 	glPointSize(20.f);
-	float val = 0.01f;
+	float val = 0.5f;
 	int modScale = 0;
-	double xPos, yPos;
 	modelView = glm::mat4(val, 0.0f, 0.0f, 0.0f, 0.0f, val, 0.0f, 0.0f, 0.0f, 0.0f, val, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 	glProgramUniformMatrix4fv(program, indexScale, 1, GL_FALSE, &mat[0][0]);
-	glm::vec3 oldMousePos;
+
+	glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	
 
 	while (!glfwWindowShouldClose(window))
 	{
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
-		glfwGetCursorPos(window, &xPos, &yPos);
-
-		glViewport(0, 0, width, height);
 		
-		//glProgramUniform1f(program, indexScale, val);
-		//modelView = glm::scale(glm::vec3(val, val, val));
-		//modelView = glm::rotate(modelView, 0.01f, glm::vec3(0.0f, 0.0f, 1.0f));
+		modelView = glm::rotate(modelView, 0.01f, glm::vec3(1.0f, 1.0f, 0.0f));
 		glProgramUniformMatrix4fv(program, indexScale, 1, GL_FALSE, &modelView[0][0]);
-		
 		
 		if (modScale == 0)
 			val += 0.0001f;
 		else
 			val -= 0.0001f;
 
-		if (val >= 0.02f)
+		if (val >= 0.2f)
 			modScale = 1;
-		if (val <= 0.01f)
+		if (val <= 0.1f)
 			modScale = 0;
+
+		//1ere passe
+		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
+		glViewport(0, 0, imgTexture.width, imgTexture.height);
+		glBindTextureUnit(0, textureID);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 3);
 		
+		//2eme passe
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, width, height);
+		
+		glBindTextureUnit(0, textureFrameBuffer);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 3);
 
-		glClear(GL_COLOR_BUFFER_BIT);
-		// glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-
-		glDrawArrays(GL_TRIANGLES, 0, logo.size() * 3);
+		/*glBindTextureUnit(0, textureID);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 3);*/
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

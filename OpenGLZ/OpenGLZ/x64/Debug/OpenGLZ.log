@@ -1,3 +1,5 @@
 ﻿  main.cpp
-D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\main.cpp(229,48): warning C4267: 'argument' : conversion de 'size_t' en 'GLsizei', perte possible de données
+D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\main.cpp(210,53): warning C4267: '+=' : conversion de 'size_t' en 'int', perte possible de données
+D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\main.cpp(285,52): warning C4267: 'argument' : conversion de 'size_t' en 'GLsizei', perte possible de données
+D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\main.cpp(293,52): warning C4267: 'argument' : conversion de 'size_t' en 'GLsizei', perte possible de données
   OpenGLZ.vcxproj -> D:\GitRepo\Synthese-image\OpenGLZ\x64\Debug\OpenGLZ.exe

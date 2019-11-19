@@ -1,10 +1,14 @@
 #version 450
 
 in vec3 color_out;
+in vec2 uv_out;
 
 out vec4 color;
 
+uniform sampler2D texScreen, texFrameBuffer;
+
 void main()
 {
-    color = vec4(1.0, 0.0, 0.0, 1.0);
+    color = texture(texScreen, uv_out);
+	//color = vec4(uv_out, 0,1);
 }
