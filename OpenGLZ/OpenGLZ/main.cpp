@@ -15,6 +15,8 @@
 #include <fstream>
 #include <string>
 
+glm::vec3 cameraPos, cameraFront, cameraUp;
+
 //#define TINYPLY_IMPLEMENTATION
 //#include <tinyply.h>
 
@@ -27,6 +29,15 @@ static void key_callback(GLFWwindow* window, int key, int /*scancode*/, int acti
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	float cameraSpeed = 0.05f; // adjust accordingly
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cameraPos += cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 /* PARTICULES */
@@ -186,7 +197,6 @@ int main(void)
 	std::vector< glm::vec3 > normals;
 	bool res = loadOBJ("Baumstamm.obj", vertices, uvs, normals);
 
-
 	// Buffers
 	GLuint vbo, vao;
 	glGenBuffers(1, &vbo);
@@ -194,34 +204,37 @@ int main(void)
 	int bufferOffset = 0;
 
 	//std::vector<Triangle> logo = ReadStl("logo.stl");
-	glm::mat4 mat, modelView;
+
 
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3) + uvs.size() * sizeof(glm::vec2), vertices.data(), GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(glm::vec3), vertices.data());
 	glBufferSubData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), uvs.size() * sizeof(glm::vec2), uvs.data());
 	//glBufferData(GL_ARRAY_BUFFER, logo.size() * sizeof(glm::vec3) * 3, logo.data(), GL_STATIC_DRAW);
+
+	glm::mat4 modelView, view, projection;
+
+	//Camera
+	cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
+	cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
+	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	// Bindings
 	const auto index = glGetAttribLocation(program, "position");
 	glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr);
 	glEnableVertexAttribArray(index);
-	bufferOffset += sizeof(glm::vec3) * vertices.size();
 
-	const auto indexScale = glGetUniformLocation(program, "scale");
+	const auto indexModelView = glGetUniformLocation(program, "modelView");
+	const auto indexView = glGetUniformLocation(program, "view");
+	const auto indexProjection = glGetUniformLocation(program, "projection");
 
 	const auto indexUV = glGetAttribLocation(program, "uv");
 	glVertexAttribPointer(indexUV, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*) (sizeof(glm::vec3) * vertices.size()));
 	glEnableVertexAttribArray(indexUV);
 
-	//const auto indexColor = glGetAttribLocation(program, "color");
-	//glVertexAttribPointer(indexColor, 3, GL_FLOAT, GL_FALSE, sizeof(Particule) , (void *) (sizeof(float) * 3));
-	//glEnableVertexAttribArray(indexColor);
-
 	//Textures
 	Image imgTexture = LoadImage("Baumstamm.bmp");
-	GLuint textureID = 0;
+	GLuint textureID;
 	glCreateTextures(GL_TEXTURE_2D, 1, &textureID);
 	glTextureStorage2D(textureID, 1, GL_RGB8, imgTexture.width, imgTexture.height);
 	glTextureSubImage2D(textureID, 0, 0, 0, imgTexture.width, imgTexture.height, GL_RGB, GL_UNSIGNED_BYTE, imgTexture.data.data());
@@ -244,37 +257,26 @@ int main(void)
 	glNamedFramebufferTexture(frameID, GL_COLOR_ATTACHMENT0, textureFrameBuffer, 0);
 	glNamedFramebufferTexture(frameID, GL_DEPTH_ATTACHMENT, textureDepthFrameBuffer, 0);
 	GLenum frameStatut = glCheckNamedFramebufferStatus(frameID, GL_FRAMEBUFFER);
-	if (frameStatut == GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "complet" << std::endl;
-	else 
-		std::cout << "incomplet" << std::endl;
+	//if (frameStatut == GL_FRAMEBUFFER_COMPLETE)
 
 	glPointSize(20.f);
-	float val = 0.5f;
-	int modScale = 0;
-	modelView = glm::mat4(val, 0.0f, 0.0f, 0.0f, 0.0f, val, 0.0f, 0.0f, 0.0f, 0.0f, val, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-	glProgramUniformMatrix4fv(program, indexScale, 1, GL_FALSE, &mat[0][0]);
-
-	glm::lookAt(glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	
+	float val = 0.3f;
+	modelView = glm::scale(glm::vec3(0.5f,0.5f,0.5f));
 
 	while (!glfwWindowShouldClose(window))
 	{
+
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
-		
-		modelView = glm::rotate(modelView, 0.01f, glm::vec3(1.0f, 1.0f, 0.0f));
-		glProgramUniformMatrix4fv(program, indexScale, 1, GL_FALSE, &modelView[0][0]);
-		
-		if (modScale == 0)
-			val += 0.0001f;
-		else
-			val -= 0.0001f;
 
-		if (val >= 0.2f)
-			modScale = 1;
-		if (val <= 0.1f)
-			modScale = 0;
+		projection = glm::perspective(90.0f, 1.86f, 0.1f, 5.0f);
+		glProgramUniformMatrix4fv(program, indexProjection, 1, GL_FALSE, &projection[0][0]);
+
+		view = glm::lookAt(cameraPos,cameraPos + cameraFront , cameraUp);
+		glProgramUniformMatrix4fv(program, indexView, 1, GL_FALSE, &view[0][0]);
+
+		modelView = glm::rotate(modelView, 0.01f, glm::vec3(1.0f, 1.0f, 0.0f));
+		glProgramUniformMatrix4fv(program, indexModelView, 1, GL_FALSE, &modelView[0][0]);
 
 		//1ere passe
 		glBindFramebuffer(GL_FRAMEBUFFER, frameID);
@@ -288,7 +290,8 @@ int main(void)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 		
-		glBindTextureUnit(0, textureFrameBuffer);
+		//glBindTextureUnit(0, textureID);
+		glBindTextureUnit(1, textureFrameBuffer);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 3);
 
