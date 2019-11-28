@@ -261,16 +261,17 @@ std::optional<float> intersect(std::variant<Node*, Sphere> var, const Ray& r) {
 	return res;
 }
 
-std::optional<std::tuple<float, std::variant<Node*, Sphere>>> getNearestIntersect(std::variant<Node*, Sphere> var, const Ray& r) {
+std::optional<std::tuple<float, std::variant<Node*, Sphere>>> getNearestIntersect(std::variant<Node*, Sphere> var, const Ray& r, unsigned int *nbRebonThrow){
 	//std::optional<std::tuple<float, std::variant<Node*, Sphere>>> res = std::nullopt;
 	std::add_pointer_t<Node *> node;
 	std::add_pointer_t<Sphere> sphere;
+	*nbRebonThrow += 1;
 
 	if ((node = std::get_if<Node*>(&var)) != nullptr) {
 		std::optional<float> tBox = intersect(var, r);
 		if (tBox.has_value()) {
-			std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t1 = getNearestIntersect((*node)->left, r);
-			std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t2 = getNearestIntersect((*node)->right, r);
+			std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t1 = getNearestIntersect((*node)->left, r, nbRebonThrow);
+			std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t2 = getNearestIntersect((*node)->right, r, nbRebonThrow);
 
 			//std::cout << "tBox = " << tBox.has_value() << std::endl;
 
@@ -296,24 +297,26 @@ std::optional<std::tuple<float, std::variant<Node*, Sphere>>> getNearestIntersec
 }
 
 //Old version
-/*std::optional<std::tuple<float,const Sphere*>> getNearestIntersect(std::vector<Sphere> spheres, const Ray& r) {
+std::optional<std::tuple<float,const Sphere*>> getNearestIntersect(std::vector<Sphere> spheres, const Ray& r, unsigned int* nbRebonThrow) {
 	std::optional<std::tuple<float, const Sphere*>> res = std::nullopt;
 
 	for (std::vector<Sphere>::iterator it2 = spheres.begin(); it2 != spheres.end(); it2++) {
 		if (res.has_value()) {
 			std::optional<float> tt = intersect(*it2, r);
+			*nbRebonThrow += 1;
 			if (tt.has_value() && tt.value() < std::get<0>(res.value()))
 				res = std::make_tuple(tt.value(), &*it2);
 		}
 		else {
 			std::optional<float> tt = intersect(*it2, r);
+			*nbRebonThrow += 1;
 			if (tt.has_value()) {
 				res = std::make_tuple(tt.value(), &*it2);
 			}
 		}
 	}
 	return res;
-}*/
+}
 
 Ray getReflectedRay(Ray rOrigine, Vector3<float> N, Vector3<float> pointIntersection) {
 	float c1 = -N.dot(rOrigine.direction);
@@ -321,16 +324,15 @@ Ray getReflectedRay(Ray rOrigine, Vector3<float> N, Vector3<float> pointIntersec
 	return Ray(pointIntersection + R.normalized() * 0.01F, R.normalized());
 }
 
-/*Vector3<float> traceRay(Ray r, const std::vector<Sphere> &spheres, const  std::vector<Light> &lights, int nbRebon) {
+Vector3<float> traceRay(Ray r, const std::vector<Sphere> &spheres, const  std::vector<Light> &lights, int depth, unsigned int *nbRebonThrow) {
 
-	if (nbRebon >= MAX_REBOND)
+	if (depth >= MAX_REBOND)
 		return Vector3<float>(0, 0, 0);
 
 	Sphere** s = nullptr;
 	Vector3<float> color(0, 0, 0);
 
-	std::optional<std::tuple<float, const Sphere*>> t = getNearestIntersect(spheres, r);
-
+	std::optional<std::tuple<float, const Sphere*>> t = getNearestIntersect(spheres, r, nbRebonThrow);
 
 	// Cas où il y a une intersection
 	if (t.has_value()) {
@@ -340,9 +342,9 @@ Ray getReflectedRay(Ray rOrigine, Vector3<float> N, Vector3<float> pointIntersec
 		Vector3<float> N = ((Sphere *)std::get<1>(t.value()))->getNormal(pointIntersection);
 
 		if (std::get<1>(t.value())->albedo == 1.0f)
-			return traceRay(getReflectedRay(r, N, pointIntersection), spheres, lights, nbRebon + 1);
-		else if(std::get<1>(t.value())->albedo == -1.0f)
-			return traceRay(getReflectedRay(r, N, pointIntersection), spheres, lights, nbRebon + 1);
+			return traceRay(getReflectedRay(r, N, pointIntersection), spheres, lights, depth + 1, nbRebonThrow);
+		else if (std::get<1>(t.value())->albedo == -1.0f)
+			return traceRay(getReflectedRay(r, N, pointIntersection), spheres, lights, depth + 1, nbRebonThrow);
 		else {
 			//Direct Light
 			for (int l = 0; l < lights.size(); l++) {
@@ -356,7 +358,7 @@ Ray getReflectedRay(Ray rOrigine, Vector3<float> N, Vector3<float> pointIntersec
 					Vector3<float> Lnormalized = L.normalized();
 
 					Ray r2 = { pointIntersection + Lnormalized * 0.01F, Lnormalized };
-					std::optional<std::tuple<float, const Sphere*>> t2 = getNearestIntersect(spheres, r2);
+					std::optional<std::tuple<float, const Sphere*>> t2 = getNearestIntersect(spheres, r2, nbRebonThrow);
 
 					if (t2.has_value() && (Lnormalized * std::get<0>(t2.value())).norm() < L.norm())
 						color = color + Vector3<float>(0, 0, 0);
@@ -382,21 +384,20 @@ Ray getReflectedRay(Ray rOrigine, Vector3<float> N, Vector3<float> pointIntersec
 				// step 4 and 5: treat the return color as if it was a light (we assume our shaded surface is diffuse)
 				indirectLight = indirectLight + sampleColor * cos(theta); // diffuse shading = L_i * cos(N.L) 
 			}
-			color = color + (indirectLight / NB_POINT_REFLECTED) * ((Sphere*)std::get<1>(t.value()))->albedo;
+			color = color + (indirectLight / NB_POINT_REFLECTED) * ((Sphere*)std::get<1>(t.value()))->albedo;*/
 		}
 	}
 	return color;
-}*/
+}
 
-Vector3<float> traceRay(Ray r, std::variant<Node*, Sphere> node, const  std::vector<Light>& lights, int nbRebon) {
-
-	if (nbRebon >= MAX_REBOND)
+Vector3<float> traceRay(Ray r, std::variant<Node*, Sphere> node, const  std::vector<Light>& lights, int depth, unsigned int* nbRebonThrow) {
+	if (depth >= MAX_REBOND)
 		return Vector3<float>(0, 0, 0);
 
 	Sphere** s = nullptr;
 	Vector3<float> color(0, 0, 0);
 
-	std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t = getNearestIntersect(node, r);
+	std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t = getNearestIntersect(node, r, nbRebonThrow);
 
 	// Cas où il y a une intersection
 	if (t.has_value()) {
@@ -406,9 +407,9 @@ Vector3<float> traceRay(Ray r, std::variant<Node*, Sphere> node, const  std::vec
 		Vector3<float> N = (std::get<Sphere>(std::get<1>(t.value()))).getNormal(pointIntersection);
 
 		if (std::get<Sphere>(std::get<1>(t.value())).albedo == 1.0f)
-			return traceRay(getReflectedRay(r, N, pointIntersection), node, lights, nbRebon + 1);
+			return traceRay(getReflectedRay(r, N, pointIntersection), node, lights, depth + 1, nbRebonThrow);
 		else if (std::get<Sphere>(std::get<1>(t.value())).albedo == -1.0f)
-			return traceRay(getReflectedRay(r, N, pointIntersection), node, lights, nbRebon + 1);
+			return traceRay(getReflectedRay(r, N, pointIntersection), node, lights, depth + 1, nbRebonThrow);
 		else {
 			//Direct Light
 			for (int l = 0; l < lights.size(); l++) {
@@ -422,7 +423,7 @@ Vector3<float> traceRay(Ray r, std::variant<Node*, Sphere> node, const  std::vec
 					Vector3<float> Lnormalized = L.normalized();
 
 					Ray r2 = { pointIntersection + Lnormalized * 0.01F, Lnormalized };
-					std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t2 = getNearestIntersect(node, r2);
+					std::optional<std::tuple<float, std::variant<Node*, Sphere>>> t2 = getNearestIntersect(node, r2, nbRebonThrow);
 
 					if (t2.has_value() && (Lnormalized * std::get<0>(t2.value())).norm() < L.norm())
 						color = color + Vector3<float>(0, 0, 0);
