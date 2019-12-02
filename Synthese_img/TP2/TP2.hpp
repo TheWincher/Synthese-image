@@ -266,7 +266,7 @@ std::optional<float> intersect(std::variant<Node*, Sphere> var, const Ray& r, un
 std::optional<std::tuple<float, std::variant<Node*, Sphere>>> getNearestIntersect(std::variant<Node*, Sphere> var, const Ray& r, unsigned long*nbRebonThrow){
 	//std::optional<std::tuple<float, std::variant<Node*, Sphere>>> res = std::nullopt;
 	std::add_pointer_t<Node *> node;
-	std::add_pointer_t<Sphere> sphere;;
+	std::add_pointer_t<Sphere> sphere;
 
 	if ((node = std::get_if<Node*>(&var)) != nullptr) {
 		std::optional<float> tBox = intersect(var, r, nbRebonThrow);
