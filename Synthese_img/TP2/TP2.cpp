@@ -26,11 +26,11 @@ std::vector<Sphere> generateSpheres(int nbSphere) {
 int main() {
 
 	Vector3<float> pointCamera = Vector3<float>(300.f, 300.f, -450.f);
-	unsigned int nbRayonLance = 0;
+	unsigned long nbRayonLance = 0;
 
 	//Création d'un tableau de spheres
 	auto start = std::chrono::system_clock::now();
-	std::vector<Sphere> spheres = generateSpheres(10000);
+	std::vector<Sphere> spheres = generateSpheres(1000);
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> timeToGenerate = end - start;
 	std::cout << "Temps pour générer les sphères = " << timeToGenerate.count() << std::endl;
