@@ -16,9 +16,9 @@
 
 #define WIDTH 600
 #define HEIGHT 600
-#define NB_POINT_LIGHT 100
-#define MAX_REBOND 3
-#define NB_POINT_REFLECTED 5
+#define NB_POINT_LIGHT 10
+#define MAX_REBOND 1
+#define NB_POINT_REFLECTED 1
 
 struct Sphere {
 	Vector3<float> center;
@@ -155,7 +155,7 @@ struct sortSphereZ
 };
 
 std::variant<Node*,Sphere> splitBox(const std::vector<Sphere> &spheres) {
-	std::vector<Sphere> sphereInBox(spheres);//getSphereInBox(node.box, spheres);
+	std::vector<Sphere> sphereInBox(spheres);
 
 	if (sphereInBox.size() > 1) {
 		Box currentBox = getBox(sphereInBox, 0, (int) sphereInBox.size());
@@ -197,7 +197,7 @@ float clampMin(float min, float value)
 	return value;
 }
 
-std::optional<float> intersect(const Sphere& s, const Ray& r, unsigned long* nbRebonThrow) {
+std::optional<float> intersect(const Sphere& s, const Ray& r, unsigned long long* nbRebonThrow) {
 	(*nbRebonThrow) += 1;
 	Vector3<float> rDirectionNorm = r.direction.normalized();
 	float a = 1;
@@ -214,12 +214,10 @@ std::optional<float> intersect(const Sphere& s, const Ray& r, unsigned long* nbR
 	}
 	if (res < 0)
 		return std::nullopt;
-
-	//std::cout << "res = " << res << std::endl;
 	return res;
 }
 
-std::optional<float> intersect(const Box& box, const Ray& r, unsigned long *nbRebonThrow) {
+std::optional<float> intersect(const Box& box, const Ray& r, unsigned long long *nbRebonThrow) {
 	// r.dir is unit direction vector of ray
 	(*nbRebonThrow) += 1;
 	Vector3<float> dirfrac;
@@ -248,7 +246,7 @@ std::optional<float> intersect(const Box& box, const Ray& r, unsigned long *nbRe
 	return tmin;
 }
 
-std::optional<float> intersect(std::variant<Node*, Sphere> var, const Ray& r, unsigned long *nbRebonThrow) {
+std::optional<float> intersect(std::variant<Node*, Sphere> var, const Ray& r, unsigned long long *nbRebonThrow) {
 	std::optional<float> res = std::nullopt;
 	std::add_pointer_t<Node*> node = std::get_if<Node*>(&var);
 	std::add_pointer_t<Sphere> sphere  = std::get_if<Sphere>(&var);
@@ -263,7 +261,7 @@ std::optional<float> intersect(std::variant<Node*, Sphere> var, const Ray& r, un
 	return res;
 }
 
-std::optional<std::tuple<float, std::variant<Node*, Sphere>>> getNearestIntersect(std::variant<Node*, Sphere> var, const Ray& r, unsigned long*nbRebonThrow){
+std::optional<std::tuple<float, std::variant<Node*, Sphere>>> getNearestIntersect(std::variant<Node*, Sphere> var, const Ray& r, unsigned long long*nbRebonThrow){
 	//std::optional<std::tuple<float, std::variant<Node*, Sphere>>> res = std::nullopt;
 	std::add_pointer_t<Node *> node;
 	std::add_pointer_t<Sphere> sphere;
@@ -298,7 +296,7 @@ std::optional<std::tuple<float, std::variant<Node*, Sphere>>> getNearestIntersec
 }
 
 //Old version
-std::optional<std::tuple<float,const Sphere*>> getNearestIntersect(std::vector<Sphere> spheres, const Ray& r, unsigned long* nbRebonThrow) {
+std::optional<std::tuple<float,const Sphere*>> getNearestIntersect(std::vector<Sphere> spheres, const Ray& r, unsigned long long* nbRebonThrow) {
 	std::optional<std::tuple<float, const Sphere*>> res = std::nullopt;
 
 	for (std::vector<Sphere>::iterator it2 = spheres.begin(); it2 != spheres.end(); it2++) {
@@ -323,7 +321,7 @@ Ray getReflectedRay(Ray rOrigine, Vector3<float> N, Vector3<float> pointIntersec
 	return Ray(pointIntersection + R.normalized() * 0.01F, R.normalized());
 }
 
-Vector3<float> traceRay(Ray r, const std::vector<Sphere> &spheres, const  std::vector<Light> &lights, int depth, unsigned long*nbRebonThrow) {
+Vector3<float> traceRay(Ray r, const std::vector<Sphere> &spheres, const  std::vector<Light> &lights, int depth, unsigned long long*nbRebonThrow) {
 
 	if (depth >= MAX_REBOND)
 		return Vector3<float>(0, 0, 0);
@@ -389,7 +387,7 @@ Vector3<float> traceRay(Ray r, const std::vector<Sphere> &spheres, const  std::v
 	return color;
 }
 
-Vector3<float> traceRay(Ray r, std::variant<Node*, Sphere> node, const  std::vector<Light>& lights, int depth, unsigned long* nbRebonThrow) {
+Vector3<float> traceRay(Ray r, std::variant<Node*, Sphere> node, const  std::vector<Light>& lights, int depth, unsigned long long* nbRebonThrow) {
 	if (depth >= MAX_REBOND)
 		return Vector3<float>(0, 0, 0);
 

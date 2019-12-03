@@ -45,6 +45,8 @@ struct Particule {
 	glm::vec3 position;
 	glm::vec3 color;
 	glm::vec3 speed;
+	float life;
+	float mass;
 };
 
 std::vector<Particule> MakeParticules(const int n)
@@ -69,10 +71,12 @@ std::vector<Particule> MakeParticules(const int n)
 				distribution01(generator),
 				distribution01(generator)
 				},
-				{0.f, 0.f, 0.f}
-				});
+				{0.f, 0.f, 0.f},
+				0.0f,
+				10.0f
+				}
+		);
 	}
-
 	return p;
 }
 

@@ -9,5 +9,8 @@ uniform sampler2D texScreen, texFrameBuffer;
 
 void main()
 {
-    color = texture(texScreen, uv_out);
+	// Pour les textures
+    //color = texture(texScreen, uv_out);
+
+	color = vec4(color_out, 1.0f);
 }

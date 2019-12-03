@@ -3,6 +3,7 @@
 in vec3 position;
 in vec2 uv;
 in vec3 color;
+//in float speed;
 
 uniform mat4 view, modelView, projection;
 
@@ -14,5 +15,7 @@ void main()
     gl_Position = projection * view * modelView * vec4(position , 1.0);
 
 	color_out = color;
-	uv_out = uv;
+
+	//Pour les textures
+	//uv_out = uv;
 }

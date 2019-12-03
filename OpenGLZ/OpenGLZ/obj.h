@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 #include <iostream>     // std::cout
 #include <fstream>      // std::ifstream
 #include <string>

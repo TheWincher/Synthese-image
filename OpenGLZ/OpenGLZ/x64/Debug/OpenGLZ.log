@@ -1,4 +1,5 @@
-﻿  main.cpp
-D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\main.cpp(287,52): warning C4267: 'argument' : conversion de 'size_t' en 'GLsizei', perte possible de données
-D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\main.cpp(296,52): warning C4267: 'argument' : conversion de 'size_t' en 'GLsizei', perte possible de données
+﻿  MainParticule.cpp
+D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\MainParticule.cpp(255,16): warning C4244: 'initialisation' : conversion de 'float' en 'DWORD', perte possible de données
+D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\MainParticule.cpp(260,19): warning C4244: 'initialisation' : conversion de 'float' en 'DWORD', perte possible de données
+D:\GitRepo\Synthese-image\OpenGLZ\OpenGLZ\MainParticule.cpp(261,30): warning C4244: '=' : conversion de 'float' en 'DWORD', perte possible de données
   OpenGLZ.vcxproj -> D:\GitRepo\Synthese-image\OpenGLZ\x64\Debug\OpenGLZ.exe

@@ -1,0 +1,32 @@
+#version 450
+
+layout(local_size_x = 32) in;
+
+uniform vec2 mouse;
+
+struct particule
+{
+	vec4 position;
+	vec4 color;
+	vec4 speed;
+};
+
+layout(std430, binding = 0) buffer parts
+{
+	particule particules[];
+};
+
+void main()
+{
+	float dt = 0.01f;
+	float mass = 0.1f;
+	vec4 acc = mass * 9.81 * vec4(0,-1,0,0);
+	//particules[gl_GlobalInvocationID.x].speed.w += dt;
+	particules[gl_GlobalInvocationID.x].position += acc * dt * 0.01;
+	particules[gl_GlobalInvocationID.x].position += particules[gl_GlobalInvocationID.x].speed * dt * 0.01;
+
+	if(particules[gl_GlobalInvocationID.x].position.y < -1.0f)
+	{
+		particules[gl_GlobalInvocationID.x].position.y = 1.0f; 
+	}
+}
